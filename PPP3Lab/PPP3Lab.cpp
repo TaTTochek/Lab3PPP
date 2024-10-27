@@ -1,8 +1,13 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 using namespace std;
+
+float inputFloat(float& f);
+bool isFloat(const std::string& input);
+
 
 class ITariff {
 protected:
@@ -18,10 +23,10 @@ public:
 
 class PrekollTarif : public ITariff {
 private:
-    int XyeCoc;
+    float discont;
 public:
-    PrekollTarif(float cost, string TName, int XyeCoc) : ITariff(cost, TName), XyeCoc(XyeCoc) {}
-    float GetCost() const override { return (cost - XyeCoc); };
+    PrekollTarif(float cost, string TName, float discont) : ITariff(cost, TName), discont(discont) {}
+    float GetCost() const override { return (cost - discont); };
     //PrekollTarif(float cost, string TName) : Tarif(cost, TName){}
     //~PrekollTarif() override { cout << "Сука" << endl; }
 };
@@ -49,6 +54,18 @@ public:
             cout << tarif->GetCost() << " " << tarif->GetName() << endl;
         }
     }
+    void GetMaxTariff() {
+        if (tariffs.empty()) {
+            cout << "Нет тарифов" << endl;
+            return;
+        }
+
+        ITariff* max_cost = tariffs[0];
+        for (const auto& tarif : tariffs) {
+            if (tarif->GetCost() > max_cost->GetCost()) max_cost = tarif;
+        }
+        cout << max_cost->GetCost() << endl;
+    }
 };
 
 
@@ -65,12 +82,78 @@ int main()
     cout << X.GetName() << endl;
     Airport Y;
     Y.addTarif(new ClassicTariff(123.22, "s"));
+    Y.addTarif(new ClassicTariff(123.23, "d"));
+    Y.addTarif(new PrekollTarif(123.24, "t", 0));
+    Y.addTarif(new ClassicTariff(123.24, "s"));
     //Y.addTarif(&Z); - так не делать (проблема с удалением памяти)
     Y.ShowTariff();
+    Y.GetMaxTariff();
+
+    string test; bool flag = 1;float tes1t;
+    cout << "Введите float" << endl;
+    inputFloat(tes1t);
+    cout << tes1t << endl;
+    inputFloat(tes1t);
+    cout << tes1t << endl;
+
+    //while (true) {
+    //    cin >> test;
+
+    //    if (isFloat(test)) {
+    //        std::cout << "Введено корректное число с плавающей точкой.\n";
+    //        break;
+    //    }
+    //    else {
+    //        std::cout << "Введено некорректное значение.\n";
+    //        cin.get();
+    //    }
+    //}
+
+
+
+    /*if (!(cin >> test)) {
+        cout << "Ну и калл" << endl;
+    }*/
+    //while (true) {
+    //    cin >> test;
+    //    if (cin.fail() || cin.get() != '\n') {
+    //        cin.clear();cin.ignore('\n');cout << "error" << endl; continue;
+    //    }
+    //    else break;
+    //}
+
     //cout << sizeof(Z) << " " << sizeof(X) << endl;
     //Y.addTarif(Z)
 
     return 0;
+}
 
 
+
+
+float inputFloat(float& f) {
+    string temp;
+    while (true) {
+        cin >> temp;
+        if (isFloat(temp)) {
+            std::cout << "Введено корректное число с плавающей точкой.\n";
+            break;
+        }
+        else {
+            std::cout << "Введено некорректное значение.\n";
+            cin.get();
+        }
+    }
+    return f = stof(temp);
+}
+
+bool isFloat(const std::string& input) {
+    std::istringstream stream(input);
+    float f;
+    // Проверяем, что поток успешно конвертирует строку в float
+    if (!(stream >> f)) {
+        return false; // Если не удалось, возвращаем false
+    }
+    // Проверяем, что в потоке не осталось лишних символов
+    return stream.eof();
 }
