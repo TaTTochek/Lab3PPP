@@ -69,12 +69,12 @@ int main()
     system("cls");
     Airport Y;
 
-    string test, wntd;float Tcost, Tdiscont;
+    string test, wntd; float Tcost, Tdiscont; int error;
 
     //список комманд - 1-2. добавить тариф со скидкой, 3. вывести все тарифы, 4. вывести тариф с максимальной стоимостью.
 
     do {
-        cout << "Список комманд:\n1 - Добавить тариф с фиксированной скидкой\n2 - Добавить тариф без фиксированной скидкой\n3 - Вывести список тарифов\n4 - Купить тариф с максимальной стоимостью\n5 - Завершить работу\n";
+        cout << "Список комманд:\n1 - Добавить тариф с фиксированной скидкой\n2 - Добавить тариф без фиксированной скидкой\n3 - Вывести список тарифов\n4 - Вывести тариф с максимальной стоимостью\n5 - Завершить работу\n";
         cout << "Введите комманду: ";
         cin >> wntd;
         cout << "\n";
@@ -83,13 +83,20 @@ int main()
             cout << "Неправильная команда\n";
         }
         else if (wntd == "1") {
-            cout << "Введите стоимость билета" << endl;
-            inputFloat(Tcost);
-            cout << "Введите фиксированную скидку" << endl;
-            inputFloat(Tdiscont);
-            cout << "Введите название направления" << endl;
-            cin >> test;
-            cin.get();
+            try {
+                cout << "Введите стоимость билета" << endl;
+                inputFloat(Tcost);
+                cout << "Введите фиксированную скидку" << endl;
+                inputFloat(Tdiscont);
+                cout << "Введите название направления" << endl;
+                cin >> test;
+                cin.get();
+            }
+            catch (int code) {
+                if (code == -1) cout << "Значение не входит в диапазон [0; 100000]" << endl;
+                else if (code == -2) cout << "Значение некорректно" << endl;
+                continue;
+            }
 
             if (Tcost < Tdiscont) {
                 cout << "Скидка не может быть больше стоимости" << endl;
@@ -98,11 +105,18 @@ int main()
             Y.addTarif(new DiscontTariff(Tcost, test, Tdiscont));
         }
         else if (wntd == "2") {
-            cout << "Введите стоимость билета" << endl;
-            inputFloat(Tcost);
-            cout << "Введите название направления" << endl;
-            cin >> test;
-            cin.get();
+            try {
+                cout << "Введите стоимость билета" << endl;
+                inputFloat(Tcost);
+                cout << "Введите название направления" << endl;
+                cin >> test;
+                cin.get();
+            }
+            catch (int code) {
+                if (code == -1) cout << "Значение не входит в диапазон [0; 100000]" << endl;
+                else if (code == -2) cout << "Значение некорректно" << endl;
+                continue;
+            }
             Y.addTarif(new ClassicTariff(Tcost, test));
         }
         else if (wntd == "3") {
@@ -125,12 +139,17 @@ float inputFloat(float& f) {
         cin >> temp;
         if (isFloat(temp)) {
             //std::cout << "Введено корректное число с плавающей точкой.\n";
-            if (stof(temp) < 0) continue;
+            if (stof(temp) < 0 || stof(temp) > 100000) {
+                throw (-1);
+                continue;
+            }
             break;
         }
         else {
-            std::cout << "Введено некорректное значение.\n";
+            //std::cout << "Введено некорректное значение.\n";
             cin.get();
+            throw (-2);
+            break;
         }
     }
     return f = stof(temp);
