@@ -8,27 +8,24 @@ using namespace std;
 float inputFloat(float& f);
 bool isFloat(const std::string& input);
 
-
 class ITariff {
 protected:
     float cost;
     string TName;
 public:
-    ITariff(float cost, string TName) : cost(cost), TName(TName) { cout << "XyeCoC" << endl; }
-    virtual ~ITariff() { cout << "класс был удалён" << endl; }
+    ITariff(float cost, string TName) : cost(cost), TName(TName) { cout << "the class has been CREATED" << endl; }
+    virtual ~ITariff() { cout << "the class has been DESTROYED" << endl; }
 
     virtual float GetCost() const = 0;
     virtual string GetName() { return TName; }
 };
 
-class PrekollTarif : public ITariff {
+class DiscontTariff : public ITariff {
 private:
     float discont;
 public:
-    PrekollTarif(float cost, string TName, float discont) : ITariff(cost, TName), discont(discont) {}
+    DiscontTariff(float cost, string TName, float discont) : ITariff(cost, TName), discont(discont) {}
     float GetCost() const override { return (cost - discont); };
-    //PrekollTarif(float cost, string TName) : Tarif(cost, TName){}
-    //~PrekollTarif() override { cout << "Сука" << endl; }
 };
 
 class ClassicTariff : public ITariff {
@@ -45,7 +42,6 @@ public:
         for (ITariff* tarif : tariffs) delete tarif;
         cout << "Airport was deleted" << endl;
     }
-
     void addTarif(ITariff* tarif) {
         tariffs.push_back(tarif);
     }
@@ -59,76 +55,68 @@ public:
             cout << "Нет тарифов" << endl;
             return;
         }
-
         ITariff* max_cost = tariffs[0];
         for (const auto& tarif : tariffs) {
             if (tarif->GetCost() > max_cost->GetCost()) max_cost = tarif;
         }
-        cout << max_cost->GetCost() << endl;
+        cout << "Стоимость билета - " << max_cost->GetCost() << " ; Название - " << max_cost->GetName() << endl;
     }
 };
-
 
 int main()
 {
     system("chcp 1251");
-    //cout << "Hello World!\n";
-    //ITarif T(12, "123"); - Абстрактный класс
-    PrekollTarif Z(float(123.0123), "asd", 123);
-    ClassicTariff X(float(123.55), "Faggot");
-    cout << Z.GetCost() << endl;
-    cout << Z.GetName() << endl;
-    cout << X.GetCost() << endl;
-    cout << X.GetName() << endl;
+    system("cls");
     Airport Y;
-    Y.addTarif(new ClassicTariff(123.22, "s"));
-    Y.addTarif(new ClassicTariff(123.23, "d"));
-    Y.addTarif(new PrekollTarif(123.24, "t", 0));
-    Y.addTarif(new ClassicTariff(123.24, "s"));
-    //Y.addTarif(&Z); - так не делать (проблема с удалением памяти)
-    Y.ShowTariff();
-    Y.GetMaxTariff();
 
-    string test; bool flag = 1;float tes1t;
-    cout << "Введите float" << endl;
-    inputFloat(tes1t);
-    cout << tes1t << endl;
-    inputFloat(tes1t);
-    cout << tes1t << endl;
+    string test, wntd;float Tcost, Tdiscont;
 
-    //while (true) {
-    //    cin >> test;
+    //список комманд - 1-2. добавить тариф со скидкой, 3. вывести все тарифы, 4. вывести тариф с максимальной стоимостью.
 
-    //    if (isFloat(test)) {
-    //        std::cout << "Введено корректное число с плавающей точкой.\n";
-    //        break;
-    //    }
-    //    else {
-    //        std::cout << "Введено некорректное значение.\n";
-    //        cin.get();
-    //    }
-    //}
+    do {
+        cout << "Список комманд:\n1 - Добавить тариф с фиксированной скидкой\n2 - Добавить тариф без фиксированной скидкой\n3 - Вывести список тарифов\n4 - Купить тариф с максимальной стоимостью\n5 - Завершить работу\n";
+        cout << "Введите комманду: ";
+        cin >> wntd;
+        cout << "\n";
+        if (!(wntd == "1" || wntd == "2" || wntd == "3" || wntd == "4" || wntd == "5")) wntd = "0";
+        if (wntd == "0") {
+            cout << "Неправильная команда\n";
+        }
+        else if (wntd == "1") {
+            cout << "Введите стоимость билета" << endl;
+            inputFloat(Tcost);
+            cout << "Введите фиксированную скидку" << endl;
+            inputFloat(Tdiscont);
+            cout << "Введите название направления" << endl;
+            cin >> test;
+            cin.get();
 
+            if (Tcost < Tdiscont) {
+                cout << "Скидка не может быть больше стоимости" << endl;
+                continue;
+            }
+            Y.addTarif(new DiscontTariff(Tcost, test, Tdiscont));
+        }
+        else if (wntd == "2") {
+            cout << "Введите стоимость билета" << endl;
+            inputFloat(Tcost);
+            cout << "Введите название направления" << endl;
+            cin >> test;
+            cin.get();
+            Y.addTarif(new ClassicTariff(Tcost, test));
+        }
+        else if (wntd == "3") {
+            Y.ShowTariff(); cout << "\n";
+        }
+        else if (wntd == "4") {
+            Y.GetMaxTariff(); cout << "\n";
+        }
+    } while (wntd != "5");
+    printf("\n\n\n\tСПАСИБО ЗА ВНИМАНИЕ\n\n\n");
 
-
-    /*if (!(cin >> test)) {
-        cout << "Ну и калл" << endl;
-    }*/
-    //while (true) {
-    //    cin >> test;
-    //    if (cin.fail() || cin.get() != '\n') {
-    //        cin.clear();cin.ignore('\n');cout << "error" << endl; continue;
-    //    }
-    //    else break;
-    //}
-
-    //cout << sizeof(Z) << " " << sizeof(X) << endl;
-    //Y.addTarif(Z)
 
     return 0;
 }
-
-
 
 
 float inputFloat(float& f) {
@@ -136,7 +124,8 @@ float inputFloat(float& f) {
     while (true) {
         cin >> temp;
         if (isFloat(temp)) {
-            std::cout << "Введено корректное число с плавающей точкой.\n";
+            //std::cout << "Введено корректное число с плавающей точкой.\n";
+            if (stof(temp) < 0) continue;
             break;
         }
         else {
